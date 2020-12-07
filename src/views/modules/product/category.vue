@@ -11,6 +11,7 @@
       :default-expanded-keys="expandedKey"
       draggable
       :allow-drop="allowDrop"
+      @node-drop="handleDrop"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span>{{ node.label }}</span>
@@ -74,6 +75,8 @@ export default {
   props: {},
   data() {
     return {
+      pCid: [],
+      updateNodes: [],
       maxLevel: 0,
       title: "",
       dialogType: "",
@@ -223,30 +226,82 @@ export default {
         .catch(() => {});
     },
     allowDrop(draggingNode, dropNode, type) {
-      console.log("allow drop: ", draggingNode, dropNode, type)
-      this.maxLevel = 0
-      this.countNodeLevel(draggingNode.data)
-      let depth = this.maxLevel - draggingNode.level + 1
-      console.log("depth: ", depth)
-      console.log("dorpnode: ", dropNode.level)
+      // console.log("allow drop: ", draggingNode, dropNode, type)
+      this.maxLevel = 0;
+      this.countNodeLevel(draggingNode);
+      let depth = this.maxLevel - draggingNode.level + 1;
+      // console.log("maxlevel", this.maxLevel)
+      // console.log("depth: ", depth)
+      // console.log("dropnode: ", dropNode.level)
+      // console.log("dropnode parent: ", dropNode.parent.level)
 
       if (type == "inner") {
-        return (depth + dropNode.level) <= 3
+        return depth + dropNode.level <= 3;
       } else {
-        return (depth + dropNode.parent.level) <= 3;
+        return depth + dropNode.parent.level <= 3;
       }
     },
     countNodeLevel(node) {
-      // find child nodes and get the maximum depth
-      if (node.children != null && node.children.length > 0) {
-        for (var i = 0; i < node.children.length; i++) {
-          if (node.children[i].catLevel > this.maxLevel) {
-            this.maxLevel = node.children[i].catLevel
+      //找到所有子节点，求出最大深度
+      if (node.childNodes != null && node.childNodes.length > 0) {
+        for (let i = 0; i < node.childNodes.length; i++) {
+          if (node.childNodes[i].level > this.maxLevel) {
+            this.maxLevel = node.childNodes[i].level;
           }
-          this.countNodeLevel(node.children[i])
+          this.countNodeLevel(node.childNodes[i]);
         }
       }
     },
+    handleDrop(draggingNode, dropNode, dropType, ev) {
+      console.log("handleDrop: ", draggingNode, dropNode, dropType);
+      // get current node's parent id
+      let pCid = 0;
+      let siblings = null;
+      if (dropType == "before" || dropType == "after") {
+        pCid = dropNode.parent.data.catId == undefined ? 0: dropNode.parent.childNodes;
+        siblings = dropNode.parent.childNodes
+      } else {
+        pCid = dropNode.data.catId;
+        siblings = dropNode.childNodes;
+      }
+      this.pCid.push(pCid);
+      console.log("siblings", siblings)
+      // get current dragging node's latest order
+      for (let i = 0; i < siblings.length; i++) {
+        if (siblings[i].data.catId == draggingNode.data.catId) {
+          // if we are traversing the current dragging node
+          let catLevel = draggingNode.level;
+          if (siblings[i].level != draggingNode.level) {
+            // current level change
+            catLevel = siblings[i].level;
+            // child nodes change
+            this.updateChildNodeLevel(siblings[i]);
+          }
+          this.updateNodes.push({
+            catId: siblings[i].data.catId,
+            sort: i,
+            parentCid: pCid,
+            catLevel: catLevel,
+          });
+        } else {
+          this.updateNodes.push({ catId: siblings[i].data.catId, sort: i });
+        }
+      }
+      console.log("update nodes", this.updateNodes);
+    },
+    updateChildNodeLevel(node) {
+      if (node.childNodes.length > 0) {
+        for (let i = 0; i < node.childNodes.length; i++) {
+          var cNode = node.childNodes[i].data;
+          this.updateNodes.push({
+            catId: cNode,
+            catLevel: node.childNodes[i].level,
+          });
+          this.updateChildNodeLevel(node.childNodes[i]);
+        }
+      }
+    },
+    handleNodeClick() {},
     submitData(data) {
       if (this.dialogType == "add") {
         this.addCategory();
