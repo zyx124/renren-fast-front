@@ -1,6 +1,14 @@
 /* eslint-disable */
 <template>
   <div>
+    <el-switch
+      v-model="draggable"
+      active-text="allow dragging"
+      inactive-text="stop dragging"
+    >
+    </el-switch>
+    <el-button v-if="draggable" @click="batchSave">BatchSave</el-button>
+    <el-button type="danger" @click="batchDelete">Batch Delete</el-button>
     <el-tree
       :data="menus"
       :props="defaultProps"
@@ -9,9 +17,10 @@
       show-checkbox
       node-key="catId"
       :default-expanded-keys="expandedKey"
-      draggable
+      :draggable="draggable"
       :allow-drop="allowDrop"
       @node-drop="handleDrop"
+      ref="menuTree"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span>{{ node.label }}</span>
@@ -75,6 +84,7 @@ export default {
   props: {},
   data() {
     return {
+      draggable: false,
       pCid: [],
       updateNodes: [],
       maxLevel: 0,
@@ -108,14 +118,8 @@ export default {
         url: this.$http.adornUrl("/products/category/list/tree"),
         method: "get",
       }).then(({ data }) => {
-        if (data && data.code === 0) {
-          console.log("success getting data...", data.data);
-          this.menus = data.data;
-        } else {
-          this.dataList = [];
-          this.totalPage = 0;
-        }
-        this.dataListLoading = false;
+        console.log("success getting data...", data.data);
+        this.menus = data.data;
       });
     },
     edit(data) {
@@ -229,7 +233,7 @@ export default {
       // console.log("allow drop: ", draggingNode, dropNode, type)
       this.maxLevel = 0;
       this.countNodeLevel(draggingNode);
-      let depth = this.maxLevel - draggingNode.level + 1;
+      let depth = Math.abs(this.maxLevel - draggingNode.level) + 1;
       // console.log("maxlevel", this.maxLevel)
       // console.log("depth: ", depth)
       // console.log("dropnode: ", dropNode.level)
@@ -242,7 +246,7 @@ export default {
       }
     },
     countNodeLevel(node) {
-      //找到所有子节点，求出最大深度
+      //find all the maximum depth
       if (node.childNodes != null && node.childNodes.length > 0) {
         for (let i = 0; i < node.childNodes.length; i++) {
           if (node.childNodes[i].level > this.maxLevel) {
@@ -258,14 +262,16 @@ export default {
       let pCid = 0;
       let siblings = null;
       if (dropType == "before" || dropType == "after") {
-        pCid = dropNode.parent.data.catId == undefined ? 0: dropNode.parent.childNodes;
-        siblings = dropNode.parent.childNodes
+        pCid =
+          dropNode.parent.data.catId == undefined
+            ? 0
+            : dropNode.parent.childNodes;
+        siblings = dropNode.parent.childNodes;
       } else {
         pCid = dropNode.data.catId;
         siblings = dropNode.childNodes;
       }
       this.pCid.push(pCid);
-      console.log("siblings", siblings)
       // get current dragging node's latest order
       for (let i = 0; i < siblings.length; i++) {
         if (siblings[i].data.catId == draggingNode.data.catId) {
@@ -294,12 +300,62 @@ export default {
         for (let i = 0; i < node.childNodes.length; i++) {
           var cNode = node.childNodes[i].data;
           this.updateNodes.push({
-            catId: cNode,
+            catId: cNode.catId,
             catLevel: node.childNodes[i].level,
           });
           this.updateChildNodeLevel(node.childNodes[i]);
         }
       }
+    },
+    batchSave() {
+      this.$http({
+        url: this.$http.adornUrl("/products/category/update/sort"),
+        method: "post",
+        data: this.$http.adornData(this.updateNodes, false),
+      }).then(({ data }) => {
+        this.$message({
+          message: "Successfully changed the menu order!",
+          type: "success",
+        });
+
+        // refresh the updated menu
+        this.getMenus();
+        // expand the menu
+        this.expandedKey = this.pCid;
+        this.updateNodes = [];
+        this.maxLevel = 0;
+      });
+    },
+    batchDelete() {
+      let catIds = [];
+      let checkedNodes = this.$refs.menuTree.getCheckedNodes();
+      console.log("checked nodes", checkedNodes);
+      for (let i = 0; i < checkedNodes.length; i++) {
+        catIds.push(checkedNodes[i].catId);
+      }
+      this.$confirm(
+        `This will permanently delete ${catIds}. Continue?`,
+        "Warning",
+        {
+          confirmButtonText: "OK",
+          cancelButtonText: "Cancel",
+          type: "warning",
+        }
+      )
+        .then(() => {
+          this.$http({
+            url: this.$http.adornUrl("/products/category/delete"),
+            method: "post",
+            data: this.$http.adornData(catIds, false),
+          }).then(({ data }) => {
+            this.$message({
+              message: "Batch delete finished!",
+              type: "success"
+            })
+            this.getMenus();
+          });
+        })
+        .catch(() => {});
     },
     handleNodeClick() {},
     submitData(data) {
