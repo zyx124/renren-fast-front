@@ -15,7 +15,8 @@
         <el-input v-model="dataForm.name" placeholder=""></el-input>
       </el-form-item>
       <el-form-item label="Logo" prop="logo">
-        <el-input v-model="dataForm.logo" placeholder=""></el-input>
+        <!-- <el-input v-model="dataForm.logo" placeholder=""></el-input> -->
+        <single-upload v-model="dataForm.logo"></single-upload>
       </el-form-item>
       <el-form-item label="Descript" prop="descript">
         <el-input v-model="dataForm.descript" placeholder=""></el-input>
@@ -29,12 +30,12 @@
           :inactive-value="0"
         ></el-switch>
       </el-form-item>
-      
+
       <el-form-item label="FirstLetter" prop="firstLetter">
         <el-input v-model="dataForm.firstLetter" placeholder=""></el-input>
       </el-form-item>
       <el-form-item label="Sort" prop="sort">
-        <el-input v-model="dataForm.sort" placeholder=""></el-input>
+        <el-input v-model.number="dataForm.sort" placeholder=""></el-input>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -45,7 +46,10 @@
 </template>
 
 <script>
+import SingleUpload from "../../../components/upload/singleUpload.vue";
+
 export default {
+  components: { SingleUpload },
   data() {
     return {
       visible: false,
@@ -54,17 +58,43 @@ export default {
         name: "",
         logo: "",
         descript: "",
-        showStatus: "",
+        showStatus: 1,
         firstLetter: "",
-        sort: "",
+        sort: 0,
       },
       dataRule: {
         name: [{ required: true, message: "不能为空", trigger: "blur" }],
         logo: [{ required: true, message: "不能为空", trigger: "blur" }],
         descript: [{ required: true, message: "不能为空", trigger: "blur" }],
         showStatus: [{ required: true, message: "不能为空", trigger: "blur" }],
-        firstLetter: [{ required: true, message: "不能为空", trigger: "blur" }],
-        sort: [{ required: true, message: "不能为空", trigger: "blur" }],
+        firstLetter: [
+          {
+            validator: (rule, value, callback) => {
+              if (value == "") {
+                callback(new Error("First Letter cannot be null!"));
+              } else if (!/^[a-zA-Z]$/.test(value)) {
+                callback(new Error("FIrst Letter must be a letter!"));
+              } else {
+                callback();
+              }
+            },
+            trigger: "blur",
+          },
+        ],
+        sort: [
+          {
+            validator: (rule, value, callback) => {
+              if (value == "") {
+                callback(new Error("Cannot be null!"));
+              } else if (!Number.isInteger(value) || value < 0) {
+                callback(new Error("Sort must be a positive integer!"));
+              } else {
+                callback();
+              }
+            },
+            trigger: "blur",
+          },
+        ],
       },
     };
   },

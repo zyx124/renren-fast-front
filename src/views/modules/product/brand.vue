@@ -63,6 +63,13 @@
         align="center"
         label="Logo Address"
       >
+        <template slot-scope="scope">
+          <el-image
+            style="width: 100px; height: 80px"
+            :src="scope.row.logo"
+            fit="fill"
+          ></el-image>
+        </template>
       </el-table-column>
       <el-table-column
         prop="descript"
@@ -245,6 +252,20 @@ export default {
           } else {
             this.$message.error(data.msg);
           }
+        });
+      });
+    },
+    updateBrandStatus(data) {
+      console.log("row data", data);
+      let { brandId, showStatus } = data;
+      this.$http({
+        url: this.$http.adornUrl("/products/brand/update"),
+        method: "post",
+        data: this.$http.adornData({ brandId, showStatus }, false),
+      }).then(({ data }) => {
+        this.$message({
+          type: "success",
+          message: "Update Successfully!",
         });
       });
     },
