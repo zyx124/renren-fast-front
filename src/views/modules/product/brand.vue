@@ -259,7 +259,7 @@ export default {
       console.log("row data", data);
       let { brandId, showStatus } = data;
       this.$http({
-        url: this.$http.adornUrl("/products/brand/update"),
+        url: this.$http.adornUrl("/products/brand/update/status"),
         method: "post",
         data: this.$http.adornData({ brandId, showStatus }, false),
       }).then(({ data }) => {
