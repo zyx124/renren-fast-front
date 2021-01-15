@@ -4,13 +4,12 @@
     :props="defaultProps"
     node-key="catId"
     ref="menuTree"
+    @node-click="nodeClick"
   ></el-tree>
 </template>
 <script>
-
-
 export default {
-  components: { },
+  components: {},
   props: {},
   data() {
     return {
@@ -30,9 +29,15 @@ export default {
         url: this.$http.adornUrl("/products/category/list/tree"),
         method: "get",
       }).then(({ data }) => {
-        console.log("success getting data...", data.data);
+        // console.log("success getting data...", data.data);
         this.menus = data.data;
       });
+    },
+    nodeClick(data, node, component) {
+      console.log("After Node click: ",data, node, component);
+
+      // send parent component events
+      this.$emit("tree-node-click", data, node, component);
     },
   },
   created() {
