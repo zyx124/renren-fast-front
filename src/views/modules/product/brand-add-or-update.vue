@@ -9,19 +9,19 @@
       :rules="dataRule"
       ref="dataForm"
       @keyup.enter.native="dataFormSubmit()"
-      label-width="80px"
+      label-width="140px"
     >
-      <el-form-item label="Name" prop="name">
-        <el-input v-model="dataForm.name" placeholder=""></el-input>
+      <el-form-item label="品牌名" prop="name">
+        <el-input v-model="dataForm.name" placeholder="品牌名"></el-input>
       </el-form-item>
-      <el-form-item label="Logo" prop="logo">
-        <!-- <el-input v-model="dataForm.logo" placeholder=""></el-input> -->
+      <el-form-item label="品牌logo地址" prop="logo">
+        <!-- <el-input v-model="dataForm.logo" placeholder="品牌logo地址"></el-input> -->
         <single-upload v-model="dataForm.logo"></single-upload>
       </el-form-item>
-      <el-form-item label="Descript" prop="descript">
-        <el-input v-model="dataForm.descript" placeholder=""></el-input>
+      <el-form-item label="介绍" prop="descript">
+        <el-input v-model="dataForm.descript" placeholder="介绍"></el-input>
       </el-form-item>
-      <el-form-item label="Status" prop="showStatus">
+      <el-form-item label="显示状态" prop="showStatus">
         <el-switch
           v-model="dataForm.showStatus"
           active-color="#13ce66"
@@ -30,12 +30,11 @@
           :inactive-value="0"
         ></el-switch>
       </el-form-item>
-
-      <el-form-item label="FirstLetter" prop="firstLetter">
-        <el-input v-model="dataForm.firstLetter" placeholder=""></el-input>
+      <el-form-item label="检索首字母" prop="firstLetter">
+        <el-input v-model="dataForm.firstLetter" placeholder="检索首字母"></el-input>
       </el-form-item>
-      <el-form-item label="Sort" prop="sort">
-        <el-input v-model.number="dataForm.sort" placeholder=""></el-input>
+      <el-form-item label="排序" prop="sort">
+        <el-input v-model.number="dataForm.sort" placeholder="排序"></el-input>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -46,8 +45,7 @@
 </template>
 
 <script>
-import SingleUpload from "../../../components/upload/singleUpload.vue";
-
+import SingleUpload from "@/components/upload/singleUpload";
 export default {
   components: { SingleUpload },
   data() {
@@ -60,42 +58,52 @@ export default {
         descript: "",
         showStatus: 1,
         firstLetter: "",
-        sort: 0,
+        sort: 0
       },
       dataRule: {
-        name: [{ required: true, message: "不能为空", trigger: "blur" }],
-        logo: [{ required: true, message: "不能为空", trigger: "blur" }],
-        descript: [{ required: true, message: "不能为空", trigger: "blur" }],
-        showStatus: [{ required: true, message: "不能为空", trigger: "blur" }],
+        name: [{ required: true, message: "品牌名不能为空", trigger: "blur" }],
+        logo: [
+          { required: true, message: "品牌logo地址不能为空", trigger: "blur" }
+        ],
+        descript: [
+          { required: true, message: "介绍不能为空", trigger: "blur" }
+        ],
+        showStatus: [
+          {
+            required: true,
+            message: "显示状态[0-不显示；1-显示]不能为空",
+            trigger: "blur"
+          }
+        ],
         firstLetter: [
           {
             validator: (rule, value, callback) => {
               if (value == "") {
-                callback(new Error("First Letter cannot be null!"));
+                callback(new Error("首字母必须填写"));
               } else if (!/^[a-zA-Z]$/.test(value)) {
-                callback(new Error("FIrst Letter must be a letter!"));
+                callback(new Error("首字母必须a-z或者A-Z之间"));
               } else {
                 callback();
               }
             },
-            trigger: "blur",
-          },
+            trigger: "blur"
+          }
         ],
         sort: [
           {
             validator: (rule, value, callback) => {
               if (value == "") {
-                callback(new Error("Cannot be null!"));
-              } else if (!Number.isInteger(value) || value < 0) {
-                callback(new Error("Sort must be a positive integer!"));
+                callback(new Error("排序字段必须填写"));
+              } else if (!Number.isInteger(value) || value<0) {
+                callback(new Error("排序必须是一个大于等于0的整数"));
               } else {
                 callback();
               }
             },
-            trigger: "blur",
-          },
-        ],
-      },
+            trigger: "blur"
+          }
+        ]
+      }
     };
   },
   methods: {
@@ -110,7 +118,7 @@ export default {
               `/products/brand/info/${this.dataForm.brandId}`
             ),
             method: "get",
-            params: this.$http.adornParams(),
+            params: this.$http.adornParams()
           }).then(({ data }) => {
             if (data && data.code === 0) {
               this.dataForm.name = data.brand.name;
@@ -126,7 +134,7 @@ export default {
     },
     // 表单提交
     dataFormSubmit() {
-      this.$refs["dataForm"].validate((valid) => {
+      this.$refs["dataForm"].validate(valid => {
         if (valid) {
           this.$http({
             url: this.$http.adornUrl(
@@ -140,8 +148,8 @@ export default {
               descript: this.dataForm.descript,
               showStatus: this.dataForm.showStatus,
               firstLetter: this.dataForm.firstLetter,
-              sort: this.dataForm.sort,
-            }),
+              sort: this.dataForm.sort
+            })
           }).then(({ data }) => {
             if (data && data.code === 0) {
               this.$message({
@@ -151,7 +159,7 @@ export default {
                 onClose: () => {
                   this.visible = false;
                   this.$emit("refreshDataList");
-                },
+                }
               });
             } else {
               this.$message.error(data.msg);
@@ -159,7 +167,7 @@ export default {
           });
         }
       });
-    },
-  },
+    }
+  }
 };
 </script>
