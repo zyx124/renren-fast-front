@@ -168,6 +168,7 @@ export default {
       this.dataListLoading = true;
       let type = this.attrtype == 0 ? "sale" : "base";
       this.$http({
+        // url: this.$http.adornUrl(`/products/attr/${type}/list/${this.catId}`),
         url: this.$http.adornUrl(`/products/attr/${type}/list/${this.catId}`),
         method: "get",
         params: this.$http.adornParams({
@@ -177,6 +178,7 @@ export default {
         })
       }).then(({ data }) => {
         if (data && data.code === 0) {
+          console.log("data",data)
           this.dataList = data.page.list;
           this.totalPage = data.page.totalCount;
         } else {
