@@ -67,6 +67,7 @@ router.beforeEach((to, from, next) => {
       method: 'get',
       params: http.adornParams()
     }).then(({data}) => {
+      console.log("menus", data)
       if (data && data.code === 0) {
         fnAddDynamicMenuRoutes(data.menuList)
         router.options.isAddDynamicMenuRoutes = true
@@ -113,6 +114,7 @@ function fnAddDynamicMenuRoutes (menuList = [], routes = []) {
       temp = temp.concat(menuList[i].list)
     } else if (menuList[i].url && /\S/.test(menuList[i].url)) {
       menuList[i].url = menuList[i].url.replace(/^\//, '')
+      // console.log(menuList[i].url)
       var route = {
         path: menuList[i].url.replace('/', '-'),
         component: null,
