@@ -1,8 +1,16 @@
 <template>
   <div class="mod-config">
-    <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
+    <el-form
+      :inline="true"
+      :model="dataForm"
+      @keyup.enter.native="getDataList()"
+    >
       <el-form-item>
-        <el-input v-model="dataForm.key" placeholder="参数名" clearable></el-input>
+        <el-input
+          v-model="dataForm.key"
+          placeholder="参数名"
+          clearable
+        ></el-input>
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
@@ -15,28 +23,113 @@
       border
       v-loading="dataListLoading"
       @selection-change="selectionChangeHandle"
-      style="width: 100%;"
+      style="width: 100%"
     >
-      <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
-      <el-table-column prop="id" header-align="center" align="center" label="id"></el-table-column>
-      <el-table-column prop="levelId" header-align="center" align="center" label="会员等级"></el-table-column>
-      <el-table-column prop="username" header-align="center" align="center" label="用户名"></el-table-column>
-      <el-table-column prop="nickname" header-align="center" align="center" label="昵称"></el-table-column>
-      <el-table-column prop="mobile" header-align="center" align="center" label="手机号码"></el-table-column>
-      <el-table-column prop="email" header-align="center" align="center" label="邮箱"></el-table-column>
-      <el-table-column prop="header" header-align="center" align="center" label="头像"></el-table-column>
-      <el-table-column prop="gender" header-align="center" align="center" label="性别"></el-table-column>
-      <el-table-column prop="birth" header-align="center" align="center" label="生日"></el-table-column>
-      <el-table-column prop="city" header-align="center" align="center" label="所在城市"></el-table-column>
-      <el-table-column prop="job" header-align="center" align="center" label="职业"></el-table-column>
-      <el-table-column prop="sign" header-align="center" align="center" label="个性签名"></el-table-column>
-      <el-table-column prop="sourceType" header-align="center" align="center" label="用户来源"></el-table-column>
-      <el-table-column prop="integration" header-align="center" align="center" label="积分"></el-table-column>
-      <el-table-column prop="growth" header-align="center" align="center" label="成长值"></el-table-column>
-      <el-table-column prop="status" header-align="center" align="center" label="启用状态">
+      <el-table-column
+        type="selection"
+        header-align="center"
+        align="center"
+        width="50"
+      ></el-table-column>
+      <el-table-column
+        prop="id"
+        header-align="center"
+        align="center"
+        label="id"
+      ></el-table-column>
+      <el-table-column
+        prop="levelId"
+        header-align="center"
+        align="center"
+        label="会员等级"
+      ></el-table-column>
+      <el-table-column
+        prop="username"
+        header-align="center"
+        align="center"
+        label="用户名"
+      ></el-table-column>
+      <el-table-column
+        prop="nickname"
+        header-align="center"
+        align="center"
+        label="昵称"
+      ></el-table-column>
+      <el-table-column
+        prop="mobile"
+        header-align="center"
+        align="center"
+        label="手机号码"
+      ></el-table-column>
+      <el-table-column
+        prop="email"
+        header-align="center"
+        align="center"
+        label="邮箱"
+      ></el-table-column>
+      <el-table-column
+        prop="header"
+        header-align="center"
+        align="center"
+        label="头像"
+      ></el-table-column>
+      <el-table-column
+        prop="gender"
+        header-align="center"
+        align="center"
+        label="性别"
+      ></el-table-column>
+      <el-table-column
+        prop="birth"
+        header-align="center"
+        align="center"
+        label="生日"
+      ></el-table-column>
+      <el-table-column
+        prop="city"
+        header-align="center"
+        align="center"
+        label="所在城市"
+      ></el-table-column>
+      <el-table-column
+        prop="job"
+        header-align="center"
+        align="center"
+        label="职业"
+      ></el-table-column>
+      <el-table-column
+        prop="sign"
+        header-align="center"
+        align="center"
+        label="个性签名"
+      ></el-table-column>
+      <el-table-column
+        prop="sourceType"
+        header-align="center"
+        align="center"
+        label="用户来源"
+      ></el-table-column>
+      <el-table-column
+        prop="integration"
+        header-align="center"
+        align="center"
+        label="积分"
+      ></el-table-column>
+      <el-table-column
+        prop="growth"
+        header-align="center"
+        align="center"
+        label="成长值"
+      ></el-table-column>
+      <el-table-column
+        prop="status"
+        header-align="center"
+        align="center"
+        label="启用状态"
+      >
         <template slot-scope="scope">
           <el-switch
-            v-model="scope.row.status" 
+            v-model="scope.row.status"
             active-color="#13ce66"
             inactive-color="#ff4949"
             :active-value="1"
@@ -44,8 +137,19 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" header-align="center" align="center" label="注册时间"></el-table-column>
-      <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
+      <el-table-column
+        prop="createTime"
+        header-align="center"
+        align="center"
+        label="注册时间"
+      ></el-table-column>
+      <el-table-column
+        fixed="right"
+        header-align="center"
+        align="center"
+        width="150"
+        label="操作"
+      >
         <template slot-scope="scope">
           <el-button type="text" size="small">送券</el-button>
           <el-button type="text" size="small">查订单</el-button>
@@ -62,7 +166,11 @@
       layout="total, sizes, prev, pager, next, jumper"
     ></el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
-    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+    <add-or-update
+      v-if="addOrUpdateVisible"
+      ref="addOrUpdate"
+      @refreshDataList="getDataList"
+    ></add-or-update>
   </div>
 </template>
 
@@ -72,7 +180,7 @@ export default {
   data() {
     return {
       dataForm: {
-        key: ""
+        key: "",
       },
       dataList: [],
       pageIndex: 1,
@@ -80,11 +188,11 @@ export default {
       totalPage: 0,
       dataListLoading: false,
       dataListSelections: [],
-      addOrUpdateVisible: false
+      addOrUpdateVisible: false,
     };
   },
   components: {
-    AddOrUpdate
+    AddOrUpdate,
   },
   activated() {
     this.getDataList();
@@ -99,8 +207,8 @@ export default {
         params: this.$http.adornParams({
           page: this.pageIndex,
           limit: this.pageSize,
-          key: this.dataForm.key
-        })
+          key: this.dataForm.key,
+        }),
       }).then(({ data }) => {
         if (data && data.code === 0) {
           this.dataList = data.page.list;
@@ -133,37 +241,43 @@ export default {
       this.$nextTick(() => {
         this.$refs.addOrUpdate.init(id);
       });
-    }
+    },
     // 删除
-    //   deleteHandle (id) {
-    //     var ids = id ? [id] : this.dataListSelections.map(item => {
-    //       return item.id
-    //     })
-    //     this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
-    //       confirmButtonText: '确定',
-    //       cancelButtonText: '取消',
-    //       type: 'warning'
-    //     }).then(() => {
-    //       this.$http({
-    //         url: this.$http.adornUrl('/members/member/delete'),
-    //         method: 'post',
-    //         data: this.$http.adornData(ids, false)
-    //       }).then(({data}) => {
-    //         if (data && data.code === 0) {
-    //           this.$message({
-    //             message: '操作成功',
-    //             type: 'success',
-    //             duration: 1500,
-    //             onClose: () => {
-    //               this.getDataList()
-    //             }
-    //           })
-    //         } else {
-    //           this.$message.error(data.msg)
-    //         }
-    //       })
-    //     })
-    //   }
-  }
+    deleteHandle(id) {
+      var ids = id
+        ? [id]
+        : this.dataListSelections.map((item) => {
+            return item.id;
+          });
+      this.$confirm(
+        `确定对[id=${ids.join(",")}]进行[${id ? "删除" : "批量删除"}]操作?`,
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      ).then(() => {
+        this.$http({
+          url: this.$http.adornUrl("/members/member/delete"),
+          method: "post",
+          data: this.$http.adornData(ids, false),
+        }).then(({ data }) => {
+          if (data && data.code === 0) {
+            this.$message({
+              message: "操作成功",
+              type: "success",
+              duration: 1500,
+              onClose: () => {
+                this.getDataList();
+              },
+            });
+          } else {
+            this.$message.error(data.msg);
+          }
+        });
+      });
+    },
+  },
 };
 </script>
