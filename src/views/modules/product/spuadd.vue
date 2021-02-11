@@ -381,10 +381,10 @@ export default {
       },
       spuBaseInfoRules: {
         spuName: [
-          { required: true, message: "请输入商品名字", trigger: "blur" }
+          { required: false, message: "请输入商品名字", trigger: "blur" }
         ],
         spuDescription: [
-          { required: true, message: "请编写一个简单描述", trigger: "blur" }
+          { required: false, message: "请编写一个简单描述", trigger: "blur" }
         ],
         catalogId: [
           { required: true, message: "请选择一个分类", trigger: "blur" }
@@ -393,10 +393,10 @@ export default {
           { required: true, message: "请选择一个品牌", trigger: "blur" }
         ],
         decript: [
-          { required: true, message: "请上传商品详情图集", trigger: "blur" }
+          { required: false, message: "请上传商品详情图集", trigger: "blur" }
         ],
         images: [
-          { required: true, message: "请上传商品图片集", trigger: "blur" }
+          { required: false, message: "请上传商品图片集", trigger: "blur" }
         ],
         weight: [
           {
@@ -676,13 +676,18 @@ export default {
           //先对表单的baseAttrs进行初始化
           data.data.forEach(item => {
             let attrArray = [];
-            item.attrs.forEach(attr => {
+            console.log("item:", item)
+            console.log("attrs:", item.attrs)
+            if (item.attrs != null) {
+              item.attrs.forEach(attr => {
               attrArray.push({
                 attrId: attr.attrId,
                 attrValues: "",
                 showDesc: attr.showDesc
               });
             });
+            } 
+            
             this.dataResp.baseAttrs.push(attrArray);
           });
           this.dataResp.steped[0] = 0;
