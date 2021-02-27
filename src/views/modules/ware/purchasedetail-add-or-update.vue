@@ -83,7 +83,8 @@ export default {
       });
     },
     init(id) {
-      this.dataForm.id = id || 0;
+      // this.dataForm.id = id || 0;
+      this.dataForm.id = 0;
       this.visible = true;
       this.$nextTick(() => {
         this.$refs["dataForm"].resetFields();
